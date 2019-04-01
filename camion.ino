@@ -113,7 +113,7 @@ void setup()
     while (1);
   }
 
-  mp3.setVolume(7); //Volume can be 0 (off) to 31 (max)
+  mp3.setVolume(11); //Volume can be 0 (off) to 31 (max)
 
   //pinMode setup
   pinMode(OLAF_BTN, INPUT_PULLUP);
