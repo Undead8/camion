@@ -87,6 +87,8 @@ int playSongBtn(int btn, int btn_prev, int song)
 
   if ( (btn_prev == HIGH) && (btn_state == LOW) ) {
     mp3.playFile(song);
+    SerialUSB.print("Pressed button number ");
+    SerialUSB.println(btn);
 
     if (btn == OLAF_BTN) 
     {
@@ -110,6 +112,7 @@ void setup()
   //Check to see if Qwiic MP3 is present on the bus
   if (mp3.begin() == false)
   {
+    SerialUSB.println("Failed to initialize MP3 trigger");
     while (1);
   }
 
@@ -123,6 +126,11 @@ void setup()
   pinMode(ONE_BTN, INPUT_PULLUP);
   pinMode(TWO_BTN, INPUT_PULLUP);
   pinMode(THREE_BTN, INPUT_PULLUP);
+
+  // Serial initialize
+  SerialUSB.begin(9600);
+  while (!SerialUSB);
+  SerialUSB.println("SerialUSB initialized");
 
 }
 
