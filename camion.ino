@@ -129,8 +129,8 @@ void setup()
 
   // Serial initialize
   SerialUSB.begin(9600);
-  while (!SerialUSB);
-  SerialUSB.println("SerialUSB initialized");
+  //while (!SerialUSB);
+  //SerialUSB.println("SerialUSB initialized");
 
 }
 
