@@ -59,10 +59,10 @@ MP3TRIGGER mp3;
 // Pin constants
 const int OLAF_LED = 3;
 const int ELSA_LED = 4;
-const int OLAF_BTN = 5;
+const int OLAF_BTN = 8;
 const int ELSA_BTN = 6;
 const int KLAX_BTN = 7;
-const int BEEP_BTN = 8;
+const int BEEP_BTN = 5;
 const int ONE_BTN = 9;
 const int TWO_BTN = 10;
 const int THREE_BTN = 11;
