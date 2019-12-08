@@ -68,38 +68,67 @@ const int TWO_BTN = 10;
 const int THREE_BTN = 11;
 
 // Buttons management
-int olaf_btn_prev;
-int elsa_btn_prev;
-int klax_btn_prev;
-int beep_btn_prev;
-int one_btn_prev;
-int two_btn_prev;
-int three_btn_prev;
+int olaf_btn_prev = HIGH;
+int elsa_btn_prev = HIGH;
+int klax_btn_prev = HIGH;
+int beep_btn_prev = HIGH;
+int one_btn_prev = HIGH;
+int two_btn_prev = HIGH;
+int three_btn_prev = HIGH;
 
+int olaf_btn_state = HIGH;
+int elsa_btn_state = HIGH;
+int klax_btn_state = HIGH;
+int beep_btn_state = HIGH;
+int one_btn_state = HIGH;
+int two_btn_state = HIGH;
+int three_btn_state = HIGH;
+
+// Debouncer
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 200;    // the debounce time; increase if the output flickers
+
+// Flashers
 Flasher olaf_flash(OLAF_LED, 1000, 1000, 30000);
 Flasher elsa_flash(ELSA_LED, 1000, 1000, 27000);
 
 
-int playSongBtn(int btn, int btn_prev, int song)
+void startSong(int btn, int song)
 {
-  int btn_state;
-  btn_state = digitalRead(btn);
+  mp3.playFile(song);
+  SerialUSB.print("Pressed button number ");
+  SerialUSB.println(btn);
 
-  if ( (btn_prev == HIGH) && (btn_state == LOW) ) {
-    mp3.playFile(song);
-    SerialUSB.print("Pressed button number ");
-    SerialUSB.println(btn);
+  if (btn == OLAF_BTN) 
+  {
+    olaf_flash.setEndBlink();
+   }
+   else if (btn == ELSA_BTN) 
+   {
+     elsa_flash.setEndBlink();
+   } 
+}
 
-    if (btn == OLAF_BTN) 
-    {
-      olaf_flash.setEndBlink();
-    }
-    else if (btn == ELSA_BTN) 
-    {
-      elsa_flash.setEndBlink();
-    }
+
+void playSongBtn(int btn, int *btn_state, int *btn_prev, int song)
+{
+  int reading;
+  reading = digitalRead(btn);
+
+  // Debouncing: If the button changed, due to noise or pressing, reset the timer
+  if (reading != *btn_prev) { lastDebounceTime = millis(); }
+
+  // Debouncing: If the button is stable, set it as the current state
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+
+    // If the button is now reading LOW from HIGH, play the song
+    if ((*btn_state == HIGH) && (reading == LOW)) { startSong(btn, song); }
+
+    // Set the button to its stable state
+    *btn_state = reading;
   }
-  return btn_state;
+  
+  *btn_prev = reading;
 }
 
 
@@ -142,11 +171,11 @@ void loop()
   elsa_flash.Update();
 
   // Actions for all the buttons
-  olaf_btn_prev = playSongBtn(OLAF_BTN, olaf_btn_prev, 5);
-  elsa_btn_prev = playSongBtn(ELSA_BTN, elsa_btn_prev, 6);
-  klax_btn_prev = playSongBtn(KLAX_BTN, klax_btn_prev, 7);
-  beep_btn_prev = playSongBtn(BEEP_BTN, beep_btn_prev, 8);
-  one_btn_prev = playSongBtn(ONE_BTN, one_btn_prev, 9);
-  two_btn_prev = playSongBtn(TWO_BTN, two_btn_prev, 10);
-  three_btn_prev = playSongBtn(THREE_BTN, three_btn_prev, 11); 
+  playSongBtn(OLAF_BTN, &olaf_btn_state, &olaf_btn_prev, 5);
+  playSongBtn(ELSA_BTN, &elsa_btn_state, &elsa_btn_prev, 6);
+  playSongBtn(KLAX_BTN, &klax_btn_state, &klax_btn_prev, 7);
+  playSongBtn(BEEP_BTN, &beep_btn_state, &beep_btn_prev, 8);
+  playSongBtn(ONE_BTN, &one_btn_state, &one_btn_prev, 9);
+  playSongBtn(TWO_BTN, &two_btn_state, &two_btn_prev, 10);
+  playSongBtn(THREE_BTN, &three_btn_state, &three_btn_prev, 11); 
 }
